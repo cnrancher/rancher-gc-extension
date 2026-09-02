@@ -1,0 +1,11 @@
+{
+  "extensions": {
+    "kopilot-ai-ui": {
+      "repo": "cnrancher/kopilot-ui-extension",
+      "branch": "gh-pages",
+      "versions": [
+        "0.7.0"
+      ]
+    }
+  }
+}
