@@ -1,0 +1,27 @@
+apiVersion: v1
+entries:
+  kopilot-ai-ui:
+  - annotations:
+      catalog.cattle.io/certified: rancher
+      catalog.cattle.io/display-name: SUSE AI Assistant GC
+      catalog.cattle.io/namespace: cattle-ui-plugin-system
+      catalog.cattle.io/os: linux
+      catalog.cattle.io/permits-os: linux, windows
+      catalog.cattle.io/prime-only: "true"
+      catalog.cattle.io/rancher-version: '>= 2.13.0'
+      catalog.cattle.io/scope: management
+      catalog.cattle.io/ui-component: plugins
+      catalog.cattle.io/ui-extensions-version: '>= 3.0.0 < 4.0.0'
+    apiVersion: v2
+    appVersion: 0.6.1
+    created: "2026-09-09T17:53:59.206359+08:00"
+    description: Delivers context-aware guidance and real-time troubleshooting for
+      cluster workloads
+    digest: e8312a2ea30468364ea288f106e8a41a6c6807c76373e845bd8052f55fb9843a
+    icon: https://raw.githubusercontent.com/cnrancher/rancher-gc-extension/main/icons/kopilot-ai-ui/0.6.1-extention-logo.svg
+    name: kopilot-ai-ui
+    type: application
+    urls:
+    - assets/kopilot-ai-ui/kopilot-ai-ui-0.6.1.tgz
+    version: 0.6.1
+generated: "2026-09-09T17:53:59.205825+08:00"

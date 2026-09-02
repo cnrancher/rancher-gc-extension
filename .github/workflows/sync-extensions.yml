@@ -1,0 +1,163 @@
+name: Sync and Release Extensions
+
+on:
+  # triggers for "Sync and Release Extension Catalog" job which is gated to a specific PR title
+  pull_request:
+    types: [closed]
+  release:
+    types: [released]
+  # trigger for "Sync and Release Extensions" job
+  push:
+    branches:
+      - main
+    paths:
+      - manifest.json
+      - patches/**
+
+env:
+  ACTIONS_RUNNER_DEBUG: false
+  CI_COMMIT_MESSAGE: CI Build Artifacts
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  sync:
+    if: github.repository_owner == 'rancher' && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.pull_request.merged != true && github.ref_type != 'tag'
+    name: Sync and Release Extensions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      
+      - name: Setup Helm
+        uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3
+        with:
+          version: v3.12.1
+
+      - name: Run sync script
+        shell: bash
+        id: sync_script
+        run: |
+          chmod +x ./scripts/sync-charts
+          ./scripts/sync-charts
+      
+
+      - name: Run patch extensions script
+        shell: bash
+        id: patch_extensions_script
+        run: |
+          chmod +x ./scripts/patch-extensions
+          ./scripts/patch-extensions
+
+      - name: Generate branch name based on date and time
+        run: echo "NOW=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+
+      - name: Commit Changes and push to a branch
+        run: |
+          git checkout -b sync-${{ env.NOW }}
+          git add ./{assets,charts,extensions,icons,index.yaml,.patched.json}
+          git commit -a -m "Sync extensions ${{ env.NOW }}"
+          git push origin sync-${{ env.NOW }}
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        run: |
+          # Create the PR using the GitHub CLI
+          pr_number=$(gh pr create \
+            --title "Create PR for extension sync: ${{ env.NOW }}" \
+            --body "This PR was automatically created by a GitHub Action." \
+            --base main \
+            --head sync-${{ env.NOW }} \
+            --fill \
+            --repo ${{ github.repository }} | awk '{print $NF}') # Get the PR URL and Extract the last element (the PR number)
+
+          # Check if pr_number is empty (creation failed)
+          if [ -z "$pr_number" ]; then
+            echo "Failed to create PR."
+            exit 1
+          fi
+          
+          # Store the PR number as an output
+          echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
+  
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
+        with:
+          charts_dir: ./charts/*
+        env:
+          CR_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          CR_SKIP_EXISTING: true
+  sync-catalogs:
+    if: (github.repository_owner == 'rancher' && github.event.pull_request.merged == true) || github.ref_type == 'tag'
+    name: Sync and Release Extension Catalog
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check PR title
+        if: github.ref_type != 'tag'
+        id: check_title
+        run: |
+          title="${{ github.event.pull_request.title }}"
+          if [[ "$title" == *"Create PR for extension sync"* ]]; then
+            echo "match=true" >> $GITHUB_OUTPUT
+          else
+            echo "match=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout repository
+        if: steps.check_title.outputs.match == 'true' || github.ref_type == 'tag'
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Configure Git
+        if: steps.check_title.outputs.match == 'true' || github.ref_type == 'tag'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Login to Container Registry
+        if: steps.check_title.outputs.match == 'true' || github.ref_type == 'tag'
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Sync Catalog Image with Registry (tagged release)
+        if: github.ref_type == 'tag'
+        id: sync_catalog_script_tagged
+        run: |
+          chmod +x ./scripts/bundle-catalog
+          ./scripts/bundle-catalog -t ${{ github.ref_name }}
+
+      - name: Sync Catalog Image with Registry (non-tag path)
+        if: steps.check_title.outputs.match == 'true' && github.ref_type != 'tag'
+        id: sync_catalog_script
+        run: |
+          chmod +x ./scripts/bundle-catalog
+          ./scripts/bundle-catalog
+      
+      - name: Create Release tag in repo
+        if: steps.check_title.outputs.match == 'true' && github.ref_type != 'tag'
+        id: create-release-tag
+        run: |
+          NOTES_FILE=$(mktemp)
+          jq -r '
+            "## Extensions Catalog\n\n" +
+            (.extensions | to_entries | map(
+              "- Extension **\(.key)** version(s): \(.value.versions | join(", "))"
+            ) | join("\n"))
+          ' manifest.json > "$NOTES_FILE"
+          gh release create ${{ steps.sync_catalog_script.outputs.GH_RELEASE_TAG }} \
+            --title "Release extensions catalog ${{ steps.sync_catalog_script.outputs.GH_RELEASE_TAG }}" \
+            --notes-file "$NOTES_FILE"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
