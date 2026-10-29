@@ -4,7 +4,8 @@
       "repo": "cnrancher/kopilot-ui-extension",
       "branch": "gh-pages",
       "versions": [
-        "0.6.1"
+        "0.6.1",
+        "0.7.0"
       ]
     }
   }
