@@ -10,13 +10,13 @@ BOLD="\033[1m"
 NORMAL="\033[22m"
 CHECK="\xE2\x9C\x94"
 
-DOCKERHUB_REPO="rancher/ui-plugin-catalog"
+DOCKERHUB_REPO="cnrancher/ui-plugin-catalog"
 
 source "$SCRIPT_DIR/validate-icon-url.sh"
 DEST_IMAGE_NAME="ui-plugin-catalog"
 DEST_TAG="latest"
 DEST_REGISTRY=""
-DEST_NAMESPACE="rancher"
+DEST_NAMESPACE="cnrancher"
 RUNTIME="docker"
 
 usage() {
