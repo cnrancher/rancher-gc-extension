@@ -1,0 +1,1 @@
+import o from"./Tooltip-DgF2gA8V.js";o.install=t=>{t.component(o.__name,o)};export{o as default};

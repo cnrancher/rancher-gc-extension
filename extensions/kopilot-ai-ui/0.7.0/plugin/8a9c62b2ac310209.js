@@ -1,0 +1,1 @@
+import e from"./CodeBlockNode--qMp5Nyw.js";e.install=o=>{o.component(e.__name,e)};export{e as default};

@@ -1,0 +1,1 @@
+import e from"./CodeBlockNode-BccUUS3Z.js";e.install=o=>{o.component(e.__name,e)};export{e as default};

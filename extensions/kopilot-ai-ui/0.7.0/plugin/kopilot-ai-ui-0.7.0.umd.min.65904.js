@@ -1,0 +1,2 @@
+"use strict";(("undefined"!==typeof self?self:this)["webpackChunkkopilot_ai_ui_0_7_0"]=("undefined"!==typeof self?self:this)["webpackChunkkopilot_ai_ui_0_7_0"]||[]).push([[65904],{65904:function(e,t,u){u.r(t),u.d(t,{default:function(){return f["default"]}});var f=u(3050);f["default"].install=e=>{e.component(f["default"].__name,f["default"])}}}]);
+//# sourceMappingURL=kopilot-ai-ui-0.7.0.umd.min.65904.js.map

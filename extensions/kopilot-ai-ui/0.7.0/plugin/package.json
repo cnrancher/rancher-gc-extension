@@ -1,0 +1,23 @@
+{
+  "name": "kopilot-ai-ui",
+  "description": "Delivers context-aware guidance and real-time troubleshooting for cluster workloads",
+  "version": "0.7.0",
+  "private": false,
+  "rancher": true,
+  "icon": "https://raw.githubusercontent.com/cnrancher/rancher-gc-extension/main/icons/kopilot-ai-ui/0.7.0-extention-logo.svg",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "kopilot-ui-components": "workspace:*"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "@vue/cli-plugin-typescript": "~5.0.0"
+  },
+  "files": [
+    "**/*"
+  ],
+  "main": "kopilot-ai-ui-0.7.0.umd.min.js"
+}

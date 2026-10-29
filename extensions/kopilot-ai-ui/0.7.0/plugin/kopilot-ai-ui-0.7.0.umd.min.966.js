@@ -1,0 +1,2 @@
+"use strict";(("undefined"!==typeof self?self:this)["webpackChunkkopilot_ai_ui_0_7_0"]=("undefined"!==typeof self?self:this)["webpackChunkkopilot_ai_ui_0_7_0"]||[]).push([[966],{966:function(e,t,i){i.r(t),i.d(t,{default:function(){return o}});const o={};throw new Error('Could not resolve "katex/dist/contrib/mhchem" imported by "markstream-vue".')}}]);
+//# sourceMappingURL=kopilot-ai-ui-0.7.0.umd.min.966.js.map

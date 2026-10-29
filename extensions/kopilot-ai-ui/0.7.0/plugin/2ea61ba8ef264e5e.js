@@ -1,0 +1,1 @@
+import o from"./Tooltip-DAYAD4P6.js";o.install=t=>{t.component(o.__name,o)};export{o as default};

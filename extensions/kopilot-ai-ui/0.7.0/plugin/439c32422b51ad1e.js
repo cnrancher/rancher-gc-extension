@@ -1,0 +1,1 @@
+import o from"./Tooltip-Dx4a2RTa.js";o.install=a=>{a.component(o.__name,o)};export{o as default};

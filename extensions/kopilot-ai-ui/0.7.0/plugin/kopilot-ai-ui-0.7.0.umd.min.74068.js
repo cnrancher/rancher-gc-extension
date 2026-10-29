@@ -1,0 +1,1 @@
+"use strict";(("undefined"!==typeof self?self:this)["webpackChunkkopilot_ai_ui_0_7_0"]=("undefined"!==typeof self?self:this)["webpackChunkkopilot_ai_ui_0_7_0"]||[]).push([[74068],{74068:function(e,i,t){t.r(i),t.d(i,{default:function(){return u.B}});var u=t(86895)}}]);
